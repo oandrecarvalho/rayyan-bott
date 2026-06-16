@@ -1,51 +1,28 @@
-ANIMAL_TERMS = [
-    'animal experiment',
-    "animal model",
-    "mouse",
-    "mice",
-    "rat",
-    "rats"
-]
+# classifier.py
+from config import KEYWORDS_BY_CATEGORY
 
-ANTIOXIDANT_TERMS = [
-    "antioxidant",
-    "n-acetylcysteine",
-    "acetylcysteine",
-    "curcumin",
-    "quercetin",
-    "resveratrol",
-    "vitamin c"
-]
+class ArticleClassifier:
+    @staticmethod
+    def classify(text: str) -> tuple[str, str, dict]:
+        """
+        Analisa o texto fornecido e retorna a decisão, o motivo e os matches.
+        Regra: Se contiver pelo menos uma palavra-chave -> INCLUDE.
+        """
+        text_lower = text.lower()
+        matches_found = {}
+        total_matches = 0
 
-OXIDATIVE_TERMS = [
-    "reactive oxygen species",
-    "ros",
-    "oxidative stress",
-    "oxidation reduction"
-]
+        for category, terms in KEYWORDS_BY_CATEGORY.items():
+            found_in_category = [term for term in terms if term in text_lower]
+            if found_in_category:
+                matches_found[category] = found_in_category
+                total_matches += len(found_in_category)
 
-COCHLEA_TERMS = [
-    "cochlea",
-    "cochlear",
-    "hair cell",
-    "hearing loss",
-    "ototoxicity",
-    "auditory"
-]
+        if total_matches > 0:
+            decision = "INCLUDE"
+            reason = f"Termos encontrados em: {', '.join(matches_found.keys())}."
+        else:
+            decision = "EXCLUDE"
+            reason = "Nenhum termo correspondente encontrado no Scopus/Rayyan."
 
-def find_terms(text, terms):
-    text = text.lower()
-    return [term for term in terms if term.lower() in text]
-
-def classify(text):
-    findings = []
-
-    findings.extend(find_terms(text, ANIMAL_TERMS))
-    findings.extend(find_terms(text, ANTIOXIDANT_TERMS))
-    findings.extend(find_terms(text, OXIDATIVE_TERMS))
-    findings.extend(find_terms(text, COCHLEA_TERMS))
-
-    return {
-        'decision': 'INCLUDE' if findings else 'EXCLUDE',
-        'findings': list(set(findings))
-    }
+        return decision, reason, matches_found
