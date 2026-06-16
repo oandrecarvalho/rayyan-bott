@@ -106,7 +106,6 @@ Projeto
 flowchart TD
 
 A[Iniciar Script]
-B[Carregar resultado.csv]
 C[Abrir Rayyan]
 D[Aguardar Login Manual]
 E[Selecionar artigo atual]
@@ -120,8 +119,7 @@ L[Salvar resultado.csv]
 M[ArrowDown]
 N{Existe próximo artigo?}
 
-A --> B
-B --> C
+A --> C
 C --> D
 D --> E
 E --> F
